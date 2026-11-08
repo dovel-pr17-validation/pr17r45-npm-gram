@@ -1,0 +1,40 @@
+version: "3.1"
+
+services:
+  database:
+    container_name: gram-demo-postgres
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: somethingsecret
+      POSTGRES_USER: gram
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    # ports <dont enable this unless you change passwords to something secure>:
+    #   - 127.0.0.1:5432:5432
+  gram:
+    build: .
+    restart: unless-stopped
+    environment:
+      ORIGIN: http://localhost:4726 # (or your domain)
+      POSTGRES_HOST: database
+      POSTGRES_USER: gram
+      POSTGRES_PASSWORD: somethingsecret
+      POSTGRES_DATABASE: gram
+      POSTGRES_PORT: 5432
+      POSTGRES_DISABLE_SSL: "true"
+      NODE_ENV: staging # i.e. production/staging for non-demo purposes
+      AUTH_SECRET: <some long secret used to sign auth tokens>
+      # EMAIL_HOST: ""
+      # EMAIL_PORT: ""
+      # EMAIL_PASSWORD: ""
+      # EMAIL_USER: ""
+    ports:
+      - 127.0.0.1:4726:8080
+
+networks:
+  default:
+    name: gram-demo
+
+volumes:
+  pgdata:

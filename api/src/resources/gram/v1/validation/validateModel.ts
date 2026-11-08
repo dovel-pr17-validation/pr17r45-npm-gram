@@ -1,0 +1,42 @@
+/**
+ * GET /api/v1/validate/{id}
+ * @exports {function} handler
+ */
+import { DataAccessLayer } from "@gram/core/dist/data/dal.js";
+import { Request, Response } from "express";
+
+import { routeParams } from "../../../../util/routeParams.js";
+
+export function validateModel(dal: DataAccessLayer) {
+  return async (req: Request, res: Response) => {
+    const modelId = routeParams(req.params).id;
+    if (dal.validationEngine.rules.length === 0) {
+      res.json({
+        id: modelId,
+        total: 0,
+        results: [],
+        message: "No validation rules registered",
+      });
+      return;
+    }
+
+    const validationResults = await dal.validationEngine.getResults(modelId);
+
+    if (validationResults.length === 0) {
+      res.json({
+        id: modelId,
+        total: 0,
+        results: [],
+        message: `No rule applies to model ${modelId}`,
+      });
+      return;
+    }
+
+    res.json({
+      id: modelId,
+      total: validationResults.length,
+      results: validationResults,
+    });
+    return;
+  };
+}

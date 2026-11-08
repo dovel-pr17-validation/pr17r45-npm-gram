@@ -1,0 +1,47 @@
+{
+  "name": "@gram/config",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "private": true,
+  "version": "4.27.0",
+  "description": "Gram Configuration",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "lint": "prettier --check .",
+    "lint-fix": "prettier -l . --write"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/klarna/gram.git"
+  },
+  "keywords": [
+    "threat model",
+    "appsec"
+  ],
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/klarna/gram/issues"
+  },
+  "homepage": "https://github.com/klarna/gram#readme",
+  "engines": {
+    "node": "20.x || 22.x || 24.x"
+  },
+  "dependencies": {
+    "@gram/aws": "^4.27.0",
+    "@gram/azure": "^4.27.0",
+    "@gram/cncf": "^4.27.0",
+    "@gram/core": "^4.27.0",
+    "@gram/email": "^4.27.0",
+    "@gram/kubernetes": "^4.27.0",
+    "@gram/magiclink": "^4.27.0",
+    "@gram/stride": "^4.27.0",
+    "@gram/svgporn": "^4.27.0",
+    "@gram/threatlib": "^4.27.0",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.1",
+    "tsconfig-paths": "^4.1.2"
+  }
+}

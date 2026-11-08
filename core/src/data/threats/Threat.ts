@@ -1,0 +1,50 @@
+import { SuggestionID } from "../../suggestions/models.js";
+
+export enum ThreatSeverity {
+  Informative = "informative",
+  Low = "low",
+  Medium = "medium",
+  High = "high",
+  Critical = "critical",
+}
+
+/**
+ * Class definition for threat
+ */
+export default class Threat {
+  id?: string;
+  createdAt: number;
+  updatedAt: number;
+  deletedAt?: number;
+  isActionItem?: boolean;
+  severity?: ThreatSeverity;
+
+  constructor(
+    public title: string,
+    public description: string,
+    public modelId: string,
+    public componentId: string,
+    public createdBy: string,
+    public suggestionId?: SuggestionID
+  ) {
+    this.createdAt = Date.now();
+    this.updatedAt = Date.now();
+  }
+
+  toJSON() {
+    return {
+      id: this.id,
+      title: this.title,
+      description: this.description,
+      modelId: this.modelId,
+      componentId: this.componentId,
+      suggestionId: this.suggestionId?.val,
+      createdBy: this.createdBy,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
+      deletedAt: this.deletedAt,
+      isActionItem: this.isActionItem,
+      severity: this.severity,
+    };
+  }
+}

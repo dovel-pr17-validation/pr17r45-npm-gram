@@ -1,0 +1,25 @@
+{
+  "name": "@gram/oidc",
+  "type": "module",
+  "version": "4.27.0",
+  "description": "Pack with oidc auth provider",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "lint": "prettier --check .",
+    "lint-fix": "prettier -l . --write"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@gram/core": "^4.27.0",
+    "hpagent": "^1.2.0",
+    "jose": "^4.15.9",
+    "openid-client": "^5.6.5"
+  },
+  "private": true
+}

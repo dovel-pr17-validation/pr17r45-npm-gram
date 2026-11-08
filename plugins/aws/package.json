@@ -1,0 +1,24 @@
+{
+  "name": "@gram/aws",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "version": "4.27.0",
+  "description": "AWS icons for Gram",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "lint": "prettier --check .",
+    "lint-fix": "prettier -l . --write",
+    "test": "NODE_OPTIONS=--experimental-vm-modules NODE_ENV=test jest --detectOpenHandles --no-cache --runInBand --logHeapUsage --forceExit"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@gram/core": "^4.27.0",
+    "path": "^0.12.7"
+  },
+  "private": true
+}

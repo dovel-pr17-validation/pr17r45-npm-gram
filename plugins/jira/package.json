@@ -1,0 +1,24 @@
+{
+  "name": "@gram/jira",
+  "type": "module",
+  "version": "4.27.0",
+  "description": "",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "private": true,
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "lint": "prettier --check .",
+    "lint-fix": "prettier -l . --write",
+    "list-fields": "node dist/getFields.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@gram/core": "^4.27.0",
+    "node-fetch": "^3.3.2"
+  }
+}

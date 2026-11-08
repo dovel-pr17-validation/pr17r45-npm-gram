@@ -1,0 +1,14 @@
+{
+  "short_name": "Gram",
+  "name": "Gram - Threat Modelling",
+  "icons": [
+    {
+      "src": "gram_logo.svg",
+      "sizes": "any"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#ffb3c7",
+  "background_color": "#282828"
+}

@@ -1,0 +1,133 @@
+import { DataAccessLayer } from "@gram/core/dist/data/dal.js";
+import { createPostgresPool } from "@gram/core/dist/data/postgres.js";
+import { SuggestionStatus } from "@gram/core/dist/data/suggestions/Suggestion.js";
+import { systemProvider } from "@gram/core/dist/data/systems/systems.js";
+import { _deleteAllTheThings } from "@gram/core/dist/data/utils.js";
+import { randomUUID } from "crypto";
+import request from "supertest";
+import { createTestApp } from "../../../../test-util/app.js";
+import { createSampleModel } from "../../../../test-util/model.js";
+import { sampleOwnedSystem } from "../../../../test-util/sampleOwnedSystem.js";
+import {
+  sampleOtherUserToken,
+  sampleUserToken,
+} from "../../../../test-util/sampleTokens.js";
+import {
+  genSuggestedControl,
+  genSuggestedThreat,
+} from "@gram/core/dist/test-util/suggestions.js";
+import { jest } from "@jest/globals";
+
+describe("Suggestions.reject", () => {
+  const systemGetById = jest.spyOn(systemProvider, "getSystem");
+
+  let app: any;
+  let pool: any;
+  let dal: DataAccessLayer;
+  let modelId: string;
+
+  let token = "";
+
+  beforeAll(async () => {
+    token = await sampleUserToken();
+    pool = await createPostgresPool();
+    ({ app, dal } = await createTestApp());
+
+    systemGetById.mockImplementation(async () => sampleOwnedSystem);
+  });
+
+  beforeEach(async () => {
+    modelId = await createSampleModel(dal);
+  });
+
+  it("should return 401 on un-authenticated request", async () => {
+    const res = await request(app)
+      .patch(`/api/v1/suggestions/${modelId}/reject`)
+      .send({ suggestionId: genSuggestedControl().id.val });
+    expect(res.status).toBe(401);
+  });
+
+  it("should return 400 on bad modelId", async () => {
+    const res = await request(app)
+      .patch(`/api/v1/suggestions/kanelbulle/reject`)
+      .set("Authorization", token)
+      .send({ suggestionId: genSuggestedControl().id.val });
+    expect(res.status).toBe(400);
+  });
+
+  it("should return 400 on bad suggestionId", async () => {
+    const res = await request(app)
+      .patch(`/api/v1/suggestions/${modelId}/reject`)
+      .set("Authorization", token)
+      .send({ suggestionId: randomUUID() });
+
+    expect(res.status).toBe(400);
+  });
+
+  it("should return 403 on unauthorized request (default user)", async () => {
+    const otherToken = await sampleOtherUserToken();
+
+    const res = await request(app)
+      .patch(`/api/v1/suggestions/${modelId}/reject`)
+      .set("Authorization", otherToken)
+      .send({ suggestionId: genSuggestedControl().id.val });
+
+    expect(res.status).toBe(403);
+  });
+
+  it("should return 200 on successful reject for control", async () => {
+    const control = genSuggestedControl();
+
+    await dal.suggestionService.bulkInsert(modelId, {
+      sourceSlugToClear: "",
+      controls: [control],
+      threats: [],
+    });
+    const res = await request(app)
+      .patch(`/api/v1/suggestions/${modelId}/reject`)
+      .set("Authorization", token)
+      .send({ suggestionId: control.id.val });
+
+    expect(res.status).toBe(200);
+    expect(res.body.result).toBeTruthy();
+
+    const controls = await dal.suggestionService.listControlSuggestions(
+      modelId
+    );
+    expect(controls[0].status).toBe(SuggestionStatus.Rejected);
+  });
+
+  it("should return 200 on successful reject for threat", async () => {
+    const threat = genSuggestedThreat();
+
+    await dal.suggestionService.bulkInsert(modelId, {
+      sourceSlugToClear: "",
+      controls: [],
+      threats: [threat],
+    });
+    const res = await request(app)
+      .patch(`/api/v1/suggestions/${modelId}/reject`)
+      .set("Authorization", token)
+      .send({ suggestionId: threat.id.val });
+
+    expect(res.status).toBe(200);
+    expect(res.body.result).toBeTruthy();
+
+    const threats = await dal.suggestionService.listThreatSuggestions(modelId);
+    expect(threats[0].status).toBe(SuggestionStatus.Rejected);
+  });
+
+  it("should return 404 on invalid suggestion-id", async () => {
+    const res = await request(app)
+      .patch(`/api/v1/suggestions/${modelId}/reject`)
+      .set("Authorization", token)
+      .send({ suggestionId: genSuggestedControl().id.val });
+
+    expect(res.status).toBe(404);
+  });
+
+  afterAll(async () => {
+    systemGetById.mockRestore();
+    await _deleteAllTheThings(pool);
+  });
+});

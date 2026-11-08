@@ -1,0 +1,12 @@
+{
+  "extends": "../tsconfig.build.json",
+
+  "include": ["src/"],
+
+  "compilerOptions": {
+    "typeRoots": ["../node_modules/@types", "./src/@types"],
+    "outDir": "./dist"
+  },
+
+  "exclude": ["**/*.spec.ts"]
+}
